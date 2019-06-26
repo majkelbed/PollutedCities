@@ -1,0 +1,122 @@
+$theme: #3498db;
+$theme--darker: #2980b9;
+$accent: #e74c3c;
+$text: #ecf0f1;
+$bg: #2c3e50;
+$size--main: 18px;
+
+* {
+  box-sizing: border-box;
+  margin: 5px;
+  padding: 0;
+  color: $text;
+  & + * {
+    font-family: "Montserrat", sans-serif;
+  }
+}
+body {
+  background-color: $bg;
+}
+
+.app {
+  display: grid;
+  justify-content: center;
+  &_title {
+    text-align: center;
+  }
+}
+
+.countryForm {
+  display: grid;
+  grid-template-areas:
+    "nav"
+    "dis";
+  max-width: 700px;
+
+  &_nav {
+    position: relative;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    height: 50px;
+  }
+  &_input,
+  &_submit {
+    display: block;
+    max-width: 300px;
+    width: 40vw;
+    height: 100%;
+    border: 3px solid $text;
+    background: none;
+    font-size: $size--main;
+  }
+
+  &_input {
+    padding: 0 1rem;
+    &:active,
+    &:focus {
+      border-color: $theme;
+    }
+  }
+  &_submit {
+    cursor: pointer;
+    font-weight: 600;
+    background-color: $theme;
+    transition: 0.3s background-color, 0.3s color, 0.3s border-color;
+    &:hover {
+      background-color: transparent;
+      border-color: $theme;
+    }
+  }
+
+  &_display {
+    grid-area: dis;
+    list-style-type: decimal;
+
+    &--item {
+      position: relative;
+      border: 1px solid black;
+    }
+    &--city {
+      display: flex;
+      justify-content: space-between;
+    }
+    &--description {
+      display: flex;
+      align-items: baseline;
+    }
+    &--detailedDescription {
+      border: 1px solid $accent;
+      display: none;
+      max-width: 600px;
+    }
+    &--toggle {
+      width: 30px;
+      height: 30px;
+      background-color: $text;
+      border: none;
+      cursor: pointer;
+      clip-path: polygon(0 0, 50% 100%, 100% 0);
+    }
+  }
+}
+
+.test {
+  position: absolute;
+  top: 50px;
+  left: 0;
+  margin: 5px;
+  background-color: $theme;
+  z-index: 1;
+  list-style: none;
+  max-height: 300px;
+  width: 100%;
+  overflow: hidden scroll;
+  &:empty {
+    overflow: hidden;
+  }
+  & > *:hover {
+    cursor: pointer;
+    background-color: $theme--darker;
+  }
+}

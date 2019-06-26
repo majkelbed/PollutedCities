@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link
+      href="https://fonts.googleapis.com/css?family=Montserrat:400,600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.2/animate.min.css"
+    />
+    <link rel="stylesheet" href="./css/style.min.css" />
+    <script src="index.js"></script>
+    <title>Countries info</title>
+  </head>
+  <body>
+    <div class="app">
+      <h1 class="app_title">10 Most poluted cities in the country</h1>
+      <form class="app_form countryForm" id="form" autocomplete="off">
+        <label for="input_country" class="countryForm_nav">
+          <input
+            name="input_country"
+            placeholder="Country"
+            type="text"
+            id="form_input--country"
+            class="countryForm_input"
+          />
+          <ul id="autocomplete" class="test"></ul>
+
+          <button id="input_submit" class="countryForm_submit" type="submit">
+            Find out
+          </button>
+        </label>
+        <ul id="display" class="countryForm_display"></ul>
+      </form>
+    </div>
+  </body>
+</html>
