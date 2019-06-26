@@ -99,24 +99,23 @@ body {
       clip-path: polygon(0 0, 50% 100%, 100% 0);
     }
   }
-}
-
-.test {
-  position: absolute;
-  top: 50px;
-  left: 0;
-  margin: 5px;
-  background-color: $theme;
-  z-index: 1;
-  list-style: none;
-  max-height: 300px;
-  width: 100%;
-  overflow: hidden scroll;
-  &:empty {
-    overflow: hidden;
-  }
-  & > *:hover {
-    cursor: pointer;
-    background-color: $theme--darker;
+  &_autocompleteHints {
+    position: absolute;
+    top: 50px;
+    left: 0;
+    margin: 5px;
+    background-color: $theme;
+    z-index: 1;
+    list-style: none;
+    max-height: 300px;
+    width: 100%;
+    overflow: hidden scroll;
+    &:empty {
+      overflow: hidden;
+    }
+    & > *:hover {
+      cursor: pointer;
+      background-color: $theme--darker;
+    }
   }
 }

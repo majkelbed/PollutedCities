@@ -1,33 +1,3 @@
-const handleDescription = async e => {
-  e.preventDefault();
-  const parent = e.target.parentElement.parentElement;
-  const cityName = parent.dataset.city;
-  const target = [...parent.children].find(
-    child => child.className === "countryForm_display--detailedDescription"
-  );
-  if (target.style.display !== "block") {
-    e.target.style.clipPath = "polygon(50% 0%, 0% 100%, 100% 100%)";
-    target.innerHTML = "loading...";
-    target.style.display = "block";
-    const url =
-      "https://en.wikipedia.org/w/api.php?action=query&format=json&origin=*&prop=extracts&titles=";
-    const result = await fetch(url + cityName).then(res => res.json());
-    const description = Object.values(result.query.pages)[0].extract;
-    if (description === "" || description == undefined)
-      target.innerHTML = "Sorry, found nothing :(";
-    else target.innerHTML = description;
-  } else {
-    e.target.style.clipPath = "polygon(0 0, 50% 100%, 100% 0)";
-    target.style.display = "none";
-    target.innerHTML = "";
-  }
-};
-
-const handleAutocomplete = e => {
-  const countryInput = document.getElementById("form_input--country");
-  countryInput.value = e.target.innerHTML;
-};
-
 window.onload = () => {
   const display = document.getElementById("display");
   const autocomplete = document.getElementById("autocomplete");
@@ -42,9 +12,9 @@ window.onload = () => {
   const validCountries = ["Poland", "Germany", "Spain", "France"];
 
   const fetchCountryNames = async () => {
-    const countries = await fetch("https://api.openaq.org/v1/countries").then(
-      res => res.json()
-    );
+    const countries = await fetch("https://api.openaq.org/v1/countries")
+      .then(res => res.json())
+      .catch(error => console.log(error.message));
     const names = countries.results
       .map(country => {
         return { name: country.name, code: country.code };
@@ -75,13 +45,16 @@ window.onload = () => {
       var urlCities = `https://api.openaq.org/v1/cities?country=${code}&limit=1000`;
       const cities = await fetch(urlCities)
         .then(res => res.json())
-        .then(obj => obj.results);
+        .then(obj => obj.results)
+        .catch(error => console.log(error.message));
       const cityNames = cities.map(city => city.city);
 
       const promises = cityNames.map(city =>
         fetch(url + `&city=${city}`).then(res => res.json())
       );
-      const measurements = await Promise.all(promises);
+      const measurements = await Promise.all(promises).catch(error =>
+        console.log(error.message)
+      );
       const results = measurements
         .filter(locMeasures => locMeasures.results.length > 0)
         .map(location => {
@@ -155,4 +128,36 @@ window.onload = () => {
   });
 
   form.addEventListener("submit", isValidInput);
+};
+
+const handleDescription = async e => {
+  e.preventDefault();
+  const parent = e.target.parentElement.parentElement;
+  const cityName = parent.dataset.city;
+  const target = [...parent.children].find(
+    child => child.className === "countryForm_display--detailedDescription"
+  );
+  if (target.style.display !== "block") {
+    e.target.style.clipPath = "polygon(50% 0%, 0% 100%, 100% 100%)";
+    target.innerHTML = "loading...";
+    target.style.display = "block";
+    const url =
+      "https://en.wikipedia.org/w/api.php?action=query&format=json&origin=*&prop=extracts&titles=";
+    const result = await fetch(url + cityName)
+      .then(res => res.json())
+      .catch(error => console.log(error.message));
+    const description = Object.values(result.query.pages)[0].extract;
+    if (description === "" || description == undefined)
+      target.innerHTML = "Sorry, found nothing :(";
+    else target.innerHTML = description;
+  } else {
+    e.target.style.clipPath = "polygon(0 0, 50% 100%, 100% 0)";
+    target.style.display = "none";
+    target.innerHTML = "";
+  }
+};
+
+const handleAutocomplete = e => {
+  const countryInput = document.getElementById("form_input--country");
+  countryInput.value = e.target.innerHTML;
 };
