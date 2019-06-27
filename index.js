@@ -1,17 +1,12 @@
 window.onload = () => {
   const display = document.getElementById("display");
   const autocomplete = document.getElementById("autocomplete");
-
   const countryInput = document.getElementById("form_input--country");
-  countryInput.value =
-    sessionStorage.inputValue !== undefined ? sessionStorage.inputValue : "";
-
   const form = document.getElementById("form");
-
   const countryNames = [];
   const validCountries = ["Poland", "Germany", "Spain", "France"];
 
-  const fetchCountryNames = async () => {
+  const populateCountryNames = async () => {
     const countries = await fetch("https://api.openaq.org/v1/countries")
       .then(res => res.json())
       .catch(error => console.log(error.message));
@@ -22,8 +17,6 @@ window.onload = () => {
       .filter(country => country.name != undefined);
     countryNames.push(...names);
   };
-
-  fetchCountryNames();
 
   const findMatches = e => {
     const regex = new RegExp(e.target.value, "gi");
@@ -37,12 +30,12 @@ window.onload = () => {
     }
   };
 
-  const fetchMostPolutedCities = async input => {
+  const fetchMostPollutedCities = async input => {
     const { name, code } = countryNames.find(country => country.name === input);
     if (localStorage.getItem(name) == null) {
-      var url = `https://api.openaq.org/v1/measurements?country=${code}&parameter=pm25&order_by=value&sort=desc&limit=10000&value_from=10&date_from=2019-01-01`;
+      const url = `https://api.openaq.org/v1/measurements?country=${code}&parameter=pm25&order_by=value&sort=desc&limit=10000&value_from=10&date_from=2019-01-01`;
 
-      var urlCities = `https://api.openaq.org/v1/cities?country=${code}&limit=1000`;
+      const urlCities = `https://api.openaq.org/v1/cities?country=${code}&limit=1000`;
       const cities = await fetch(urlCities)
         .then(res => res.json())
         .then(obj => obj.results)
@@ -52,9 +45,11 @@ window.onload = () => {
       const promises = cityNames.map(city =>
         fetch(url + `&city=${city}`).then(res => res.json())
       );
+
       const measurements = await Promise.all(promises).catch(error =>
         console.log(error.message)
       );
+
       const results = measurements
         .filter(locMeasures => locMeasures.results.length > 0)
         .map(location => {
@@ -66,7 +61,6 @@ window.onload = () => {
         .sort((a, b) => (a.avg < b.avg ? 1 : -1))
         .splice(0, 10);
       localStorage.setItem(name, JSON.stringify(results));
-      console.log(results);
       return results;
     } else return JSON.parse(localStorage.getItem(name));
   };
@@ -74,7 +68,8 @@ window.onload = () => {
   const displayMatches = matches => {
     const html = matches.reduce(
       (html, match) =>
-        html + `<li onmousedown="handleAutocomplete(event)">${match}</li>`,
+        html +
+        `<li tabindex="0" onmousedown="handleAutocomplete(event)">${match}</li>`,
       ""
     );
 
@@ -85,7 +80,7 @@ window.onload = () => {
     return input.charAt(0).toUpperCase() + input.slice(1).toLowerCase();
   };
 
-  const isValidInput = async e => {
+  const displayCities = async e => {
     e.preventDefault();
     autocomplete.innerHTML = "";
     const currentVal = document.getElementById("form_input--country").value;
@@ -93,11 +88,13 @@ window.onload = () => {
     if (validCountries.includes(input)) {
       display.innerHTML = `loading data...`;
       autocomplete.innerHTML = "";
-      const cities = await fetchMostPolutedCities(input);
+      const cities = await fetchMostPollutedCities(input);
       display.innerHTML = cities.reduce(
         (html, location) =>
           html +
-          `<li data-city="${location.city}" class="countryForm_display--item">
+          `<li tabindex="0" data-city="${
+            location.city
+          }" class="countryForm_display--item">
             <div class="countryForm_display--city">
               <div class="countryForm_display--description">
                 <h3>${location.city}</h3>
@@ -116,19 +113,66 @@ window.onload = () => {
     }
   };
 
+  const handleKeyboardNavigation = e => {
+    const clean = () => {
+      autocomplete.innerHTML = "";
+    };
+    e.preventDefault();
+    if (e.keyCode === 40) {
+      //arrow down
+      const next = e.target.nextSibling;
+      next != null ? next.focus() : "";
+    } else if (e.keyCode === 38) {
+      //arrow up
+      const prev = e.target.previousSibling;
+      if (prev != null) prev.focus();
+      else {
+        countryInput.focus();
+        clean();
+      }
+    } else if (e.keyCode === 13) {
+      //enter
+      handleAutocomplete(e);
+    } else {
+      clean();
+    }
+  };
+
+  const handleKeyboardNavigationInputFocus = e => {
+    if (e.keyCode === 40) {
+      e.preventDefault;
+      const child = autocomplete.firstChild;
+      child != null ? child.focus() : findMatches(e);
+    }
+  };
+
+  countryInput.value =
+    sessionStorage.inputValue !== undefined ? sessionStorage.inputValue : "";
+
+  populateCountryNames();
+
+  form.addEventListener("submit", displayCities);
+
   countryInput.addEventListener("input", findMatches);
   countryInput.addEventListener("focus", findMatches);
   countryInput.addEventListener("blur", e => {
-    autocomplete.innerHTML = "";
-    sessionStorage.inputValue = countryInput.value;
+    if (e.relatedTarget == null) autocomplete.innerHTML = "";
   });
-
+  countryInput.addEventListener("keyup", handleKeyboardNavigationInputFocus);
   countryInput.addEventListener("animationend", e => {
     e.target.classList.remove("animated", "shake");
     countryInput.style.borderColor = "beige";
   });
 
-  form.addEventListener("submit", isValidInput);
+  autocomplete.addEventListener("keydown", handleKeyboardNavigation);
+
+  window.addEventListener("mouseup", e => {
+    if (e.target !== countryInput) autocomplete.innerHTML = "";
+  });
+  window.addEventListener(
+    "unload",
+    () => (sessionStorage.inputValue = countryInput.value)
+  );
 };
 
 const handleDescription = async e => {
@@ -160,5 +204,7 @@ const handleDescription = async e => {
 
 const handleAutocomplete = e => {
   const countryInput = document.getElementById("form_input--country");
+  const autocomplete = document.getElementById("autocomplete");
   countryInput.value = e.target.innerHTML;
+  autocomplete.innerHTML = "";
 };

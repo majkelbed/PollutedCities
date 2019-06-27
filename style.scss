@@ -27,10 +27,8 @@ body {
 }
 
 .countryForm {
-  display: grid;
-  grid-template-areas:
-    "nav"
-    "dis";
+  display: flex;
+  flex-direction: column;
   max-width: 700px;
 
   &_nav {
@@ -44,7 +42,7 @@ body {
   &_submit {
     display: block;
     max-width: 300px;
-    width: 40vw;
+    width: 50%;
     height: 100%;
     border: 3px solid $text;
     background: none;
@@ -70,7 +68,6 @@ body {
   }
 
   &_display {
-    grid-area: dis;
     list-style-type: decimal;
 
     &--item {
@@ -79,11 +76,15 @@ body {
     }
     &--city {
       display: flex;
+      align-items: center;
       justify-content: space-between;
     }
     &--description {
       display: flex;
       align-items: baseline;
+      @media (max-width: 400px) {
+        flex-direction: column;
+      }
     }
     &--detailedDescription {
       border: 1px solid $accent;
@@ -91,29 +92,39 @@ body {
       max-width: 600px;
     }
     &--toggle {
-      width: 30px;
-      height: 30px;
+      min-width: 30px;
+      max-width: 30px;
+      min-height: 30px;
+      max-height: 30px;
       background-color: $text;
       border: none;
       cursor: pointer;
       clip-path: polygon(0 0, 50% 100%, 100% 0);
+      transition: 0.3s clip-path;
     }
   }
   &_autocompleteHints {
     position: absolute;
+    display: block;
     top: 50px;
     left: 0;
     margin: 5px;
+    padding: 0;
     background-color: $theme;
     z-index: 1;
     list-style: none;
     max-height: 300px;
-    width: 100%;
-    overflow: hidden scroll;
+    width: 98.5%;
+    overflow: hidden auto;
     &:empty {
       overflow: hidden;
     }
-    & > *:hover {
+    & > * {
+      margin: 0;
+      padding: 5px;
+    }
+    & > *:hover,
+    & > *:focus {
       cursor: pointer;
       background-color: $theme--darker;
     }

@@ -18,7 +18,7 @@
   </head>
   <body>
     <div class="app">
-      <h1 class="app_title">10 Most poluted cities in the country</h1>
+      <h1 class="app_title">10 Most polluted cities in the country</h1>
       <form class="app_form countryForm" id="form" autocomplete="off">
         <label for="input_country" class="countryForm_nav">
           <input
@@ -28,7 +28,11 @@
             id="form_input--country"
             class="countryForm_input"
           />
-          <ul id="autocomplete" class="countryForm_autocompleteHints"></ul>
+          <ul
+            id="autocomplete"
+            tabindex="-1"
+            class="countryForm_autocompleteHints"
+          ></ul>
 
           <button id="input_submit" class="countryForm_submit" type="submit">
             Find out
