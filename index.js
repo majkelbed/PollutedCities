@@ -63,9 +63,10 @@ window.onload = () => {
           const avg = sum / l.length;
           return { city: l[0].city, avg };
         })
-        .sort((a, b) => a.avg < b.avg)
+        .sort((a, b) => (a.avg < b.avg ? 1 : -1))
         .splice(0, 10);
       localStorage.setItem(name, JSON.stringify(results));
+      console.log(results);
       return results;
     } else return JSON.parse(localStorage.getItem(name));
   };
