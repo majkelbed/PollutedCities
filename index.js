@@ -23,7 +23,7 @@ window.onload = () => {
     const results = countryNames
       .filter(country => country.name.match(regex))
       .map(country => country.name);
-    if (e.target.value.length > 0) {
+    if (e.target.value.length >= 0) {
       displayMatches(results);
     } else {
       displayMatches([]);
